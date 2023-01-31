@@ -1,3 +1,3 @@
-package utils
+package fiberutils
 
 type Map map[string]interface{}
