@@ -11,6 +11,7 @@ type RequestBody struct {
 	Query            interface{}
 	User             interface{}
 	ParseQueryParams bool
+	Debug            bool
 }
 
 type RequestError struct {
@@ -40,8 +41,11 @@ func handlePanic(c *fiber.Ctx) {
 }
 
 func PostRequestHandler(c *fiber.Ctx, actualHandler PostHandler, body RequestBody) error {
-	// Handle Panics
-	defer handlePanic(c)
+	// Handle Panics only in production
+	if !body.Debug {
+		defer handlePanic(c)
+
+	}
 
 	if b, err := ValidateBody(body.Data, c); b {
 		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
@@ -69,8 +73,11 @@ func PostRequestHandler(c *fiber.Ctx, actualHandler PostHandler, body RequestBod
 }
 
 func GetRequestHandler(c *fiber.Ctx, actualHandler GetHandler, body RequestBody) error {
-	// Handle Panics
-	defer handlePanic(c)
+	// Handle Panics Only in production
+	if !body.Debug {
+		defer handlePanic(c)
+
+	}
 
 	res, err := actualHandler(body)
 
